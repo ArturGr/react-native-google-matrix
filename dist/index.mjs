@@ -1,6 +1,6 @@
 /*global fetch, */
 'use strict';
-var qs = require('querystring');
+var qs = require('../../query-string);
 
 
 const DISTANCE_API_URL = 'https://maps.googleapis.com/maps/' +
