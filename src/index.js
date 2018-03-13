@@ -1,7 +1,6 @@
-/*global fetch, POLYFILL_FETCH*/
+
 'use strict';
-var qs = require('querystring');
-POLYFILL_FETCH
+var qs = require('../query-string');
 
 const DISTANCE_API_URL = 'https://maps.googleapis.com/maps/' +
   'api/distancematrix/json?';
@@ -29,11 +28,11 @@ class GoogleDistance {
    * @param {String|undefined} namedArgs.businessSignatureKey your business signaturek ey
    * @return {GoogleDistance} a GoogleDistance object.
    */
-  constructor(namedArgs={}){
-    let {apiKey, businessClientKey, businessSignatureKey} = namedArgs;
+  constructor(namedArgs = {}) {
+    let { apiKey, businessClientKey, businessSignatureKey } = namedArgs;
     this.apiKey = apiKey || '';
     this.businessClientKey = businessClientKey || '';
-    this.businessSignatureKey =  businessSignatureKey || '';
+    this.businessSignatureKey = businessSignatureKey || '';
   }
   /**
    * Processes input options and calls the API.
@@ -42,11 +41,11 @@ class GoogleDistance {
    * @param  {Function} callback a callback to handle (err, success)
    * @return {undefined}
    */
-  get(args, callback){
+  get(args, callback) {
     const options = this.formatOptions(args);
-    this.fetchData(options, (err, data)=>{
+    this.fetchData(options, (err, data) => {
       if (err) callback(err);
-      this.formatResults(data, options, function(err, results) {
+      this.formatResults(data, options, function (err, results) {
         if (err) callback(err);
         return callback(null, results);
       });
@@ -58,44 +57,44 @@ class GoogleDistance {
    * @return {Object} processed options
    * @throws {Error} if any invalid origins / destinations are input
    */
-  formatOptions(args){
+  formatOptions(args) {
     let {
       index, origin, origins, destination, destinations, mode, units, language,
       avoid, sensor
     } = args;
-    let {key, businessClientKey, businessSignatureKey} = this;
+    let { key, businessClientKey, businessSignatureKey } = this;
     let batchMode = false;
     // enforce defaults
-    index    = index    || null;
-    mode     = mode     || 'driving';
-    units    = units    || 'metric';
+    index = index || null;
+    mode = mode || 'driving';
+    units = units || 'metric';
     language = language || 'en';
-    avoid    = avoid    || null;
-    sensor   = sensor   || false;
+    avoid = avoid || null;
+    sensor = sensor || false;
 
     const check = (singular, plural, success) => {
       var okString = (singular || {}).constructor == String && singular.length;
       const okArray = Array.isArray(plural) && plural.length;
-      if (!okString && okArray){
+      if (!okString && okArray) {
         success(plural.join('|'));
         batchMode = true;
-      } else if (!okArray && okString){
+      } else if (!okArray && okString) {
         success(singular);
       } else {
         throw new Error(
           `invalid option values: ${JSON.stringify(singular)}, ` +
-            JSON.stringify(plural)
-          )
+          JSON.stringify(plural)
+        )
       }
     }
     check(origin, origins, checked => origins = checked);
     check(destination, destinations, checked => destinations = checked);
     return Object.assign(
-      {index, origins, destinations, mode, units, language, avoid, sensor},
-      batchMode && {batchMode}, //only include batchMode if true
+      { index, origins, destinations, mode, units, language, avoid, sensor },
+      batchMode && { batchMode }, //only include batchMode if true
       businessClientKey && businessSignatureKey
-        ? {businessClientKey, businessSignatureKey}
-        : {key}
+        ? { businessClientKey, businessSignatureKey }
+        : { key }
     );
   }
   /**
@@ -141,7 +140,7 @@ class GoogleDistance {
     for (let i = 0; i < data.origin_addresses.length; i++) {
       for (var j = 0; j < data.destination_addresses.length; j++) {
         var element = data.rows[i].elements[j];
-        let {status} = element;
+        let { status } = element;
         if (status != 'OK') return callback(new Error(`Result error: ${status}`));
         element.origin = data.origin_addresses[i];
         element.destination = data.destination_addresses[j];
@@ -164,7 +163,7 @@ class GoogleDistance {
   fetchData(options, callback) {
     fetch(DISTANCE_API_URL + qs.stringify(options))
       .then((response) => {
-        if(response.status != 200) {
+        if (response.status != 200) {
           let error = new Error(response.statusText);
           error.response = response;
           throw error;
@@ -175,7 +174,7 @@ class GoogleDistance {
       .then((response) => {
         callback(null, response);
       })
-      .catch ((error) => {
+      .catch((error) => {
         requestError(error, callback);
       });
   }
