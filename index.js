@@ -1,7 +1,6 @@
-/*global fetch, POLYFILL_FETCH*/
+
 'use strict';
 var qs = require('../query-string');
-POLYFILL_FETCH
 
 const DISTANCE_API_URL = 'https://maps.googleapis.com/maps/' +
   'api/distancematrix/json?';
