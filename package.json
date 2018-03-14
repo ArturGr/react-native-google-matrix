@@ -54,8 +54,7 @@
     "api"
   ],
   "license": "MIT",
-  "main": "index.js",
-  "module": "index.js",
+ "main": "index.js",
   "name": "react-native-google-matrix",
   "repository": {
     "type": "git",
